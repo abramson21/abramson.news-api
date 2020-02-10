@@ -1,1 +1,4 @@
-# abramson.news-api
+## abramson.news-api
+# Публичный IP - 84.201.163.223
+# Cсылка на страницу - http://www.abramson.gq
+# Ссылка на страницу через публичный IP - http://84.201.163.223
