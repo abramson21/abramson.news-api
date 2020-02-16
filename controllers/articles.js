@@ -1,7 +1,4 @@
-const mongoose = require('mongoose');
 const Article = require('../models/article');
-
-const { ObjectId } = mongoose.Types;
 
 const NotFoundError = require('../errors/error_not_found');
 
@@ -18,23 +15,23 @@ module.exports.getAllArticles = (req, res) => {
 
 module.exports.createArticle = (req, res) => {
   const owner = req.user._id;
-  const { keyword, title, text, date, source, link, image } = req.body;
-  Article.create({ keyword, title, text, date, source, link, image, owner })
+  const {
+    keyword, title, text, date, source, link, image,
+  } = req.body;
+  Article.create({
+    keyword, title, text, date, source, link, image, owner,
+  })
     .then((article) => res.send({ data: article }))
     .catch(() => res.status(500).send({ message: 'Не удается создать карточку' }));
 };
 
 module.exports.deleteArticle = (req, res, next) => {
-  const { articleId } = req.params;
-  if (!ObjectId.isValid(articleId)) {
-    return res.status(404).send({ message: 'not found' });
-  }
   Article.findById(req.params.articleId)
     .then((article) => {
       if (article) {
         if (article.owner.toString() === req.user._id) {
           Article.findByIdAndRemove(req.params.articleId)
-            .then((articleRemove) => res.send({ remove: articleRemove }))
+            .then((removeArticle) => res.send({ remove: removeArticle }))
             .catch(next);
         } else {
           next(new NotFoundError('Это не ваша карта'));

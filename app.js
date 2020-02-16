@@ -1,66 +1,39 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { celebrate, Joi, errors } = require('celebrate');
+const { errors } = require('celebrate');
+const mongoose = require('mongoose');
+
+const urls = require('./routes/index');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const users = require('./routes/users');
-const articles = require('./routes/articles');
-
 const app = express();
-
-const error = require('./routes/app');
-const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/auth');
 
 require('dotenv').config();
 
-const { PORT = 3000 } = process.env;
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+const {
+  PORT = 3000,
+  MONGODB = 'mongodb://localhost:27017/news_api',
+} = process.env;
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect(MONGODB, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
   useUnifiedTopology: true,
 });
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
 app.use(requestLogger);
 
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
-
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-    name: Joi.string().required().min(2).max(30),
-  }),
-}), createUser);
-
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-  }).unknown(true),
-}), login);
-
-
-app.use('/', auth, users);
-app.use('/', auth, articles);
-app.use('/', auth, error);
-
 app.use(errorLogger);
 
+app.use('/', urls);
 
 app.use(errors());
 
