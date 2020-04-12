@@ -1,9 +1,10 @@
 const express = require('express');
-const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const mongoose = require('mongoose');
+
+const cors = require('cors');
 
 
 const urls = require('./routes/index');
@@ -11,6 +12,8 @@ const urls = require('./routes/index');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
+
+app.use(cors());
 
 require('dotenv').config();
 
@@ -45,6 +48,5 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.use(cors());
 
 app.listen(PORT, () => {});
