@@ -3,6 +3,10 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const mongoose = require('mongoose');
+<<<<<<< HEAD
+=======
+const cors = require('cors');
+>>>>>>> level-1
 
 const urls = require('./routes/index');
 
@@ -24,6 +28,10 @@ mongoose.connect(MONGODB, {
   useUnifiedTopology: true,
 });
 
+<<<<<<< HEAD
+=======
+app.use(cors());
+>>>>>>> level-1
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
