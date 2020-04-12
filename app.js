@@ -4,16 +4,11 @@ const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const mongoose = require('mongoose');
 
-const cors = require('cors');
-
-
 const urls = require('./routes/index');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
-
-app.use(cors());
 
 require('dotenv').config();
 
@@ -28,7 +23,6 @@ mongoose.connect(MONGODB, {
   useFindAndModify: false,
   useUnifiedTopology: true,
 });
-
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
