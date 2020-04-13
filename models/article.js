@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
+const { checkLinkMsg, checkImageMsg } = require('../scripts/validator-msg');
 
-const validate = /^(https|http)?:\/\/(www.)?[^-_.\s](\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})?(:\d+)?(.+[#a-zA-Z/:0-9]{1,})?\.(.+[#a-zA-Z/:0-9]{1,})?$/i;
-
-const articleShema = new mongoose.Schema({
+const articleSchema = new mongoose.Schema({
   keyword: {
     type: String,
     required: true,
@@ -25,20 +24,33 @@ const articleShema = new mongoose.Schema({
   },
   link: {
     type: String,
-    match: validate,
     required: true,
+    validate: {
+      validator(v) {
+        return /^https?:\/\//.test(v);
+      },
+      message: checkLinkMsg,
+    },
   },
   image: {
     type: String,
-    match: validate,
     required: true,
+    validate: {
+      validator(v) {
+        return /^https?:\/\//.test(v);
+      },
+      message: checkImageMsg,
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true,
+    select: false,
   },
+},
+{
+  versionKey: false,
 });
 
-
-module.exports = mongoose.model('article', articleShema);
+module.exports = mongoose.model('article', articleSchema);

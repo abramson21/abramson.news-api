@@ -1,11 +1,15 @@
+// Переменные
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
-const { getUser } = require('../controllers/users');
+const { getUser, createUser, login } = require('../controllers/users');
+const auth = require('../middlewars/auth');
+const { newUserValidator, loginValidator } = require('../middlewars/validator');
 
-router.get('/users/me', celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string().alphanum().length(24),
-  }),
-}), getUser);
+// Роуты пользователей
+router.get('/users/me', auth, getUser);
+
+
+// Роуты регистрациии и входа
+router.post('/signup', newUserValidator, createUser);
+router.post('/signin', loginValidator, login);
 
 module.exports = router;

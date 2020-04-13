@@ -1,50 +1,43 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
+const helmet = require('helmet');
 const { errors } = require('celebrate');
-const mongoose = require('mongoose');
-const cors = require('./middlewares/cors');
-
-const urls = require('./routes/index');
-
-const { requestLogger, errorLogger } = require('./middlewares/logger');
-
-const app = express();
-
+const { requestLogger, errorLogger } = require('./middlewars/logger');
+const limiter = require('./middlewars/limiter');
+const { mongoUrl } = require('./scripts/config');
+const { errHandler, notFoundErrHandler } = require('./middlewars/error-handlers');
 require('dotenv').config();
 
-const {
-  PORT = 3000,
-  MONGODB = 'mongodb://localhost:27017/news_api',
-} = process.env;
+const { PORT = 3000 } = process.env;
+const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+app.use(helmet.xssFilter());
+app.use(helmet.frameguard());
+app.use(limiter);
 
-mongoose.connect(MONGODB, {
+mongoose.connect(mongoUrl, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
-  useUnifiedTopology: true,
-});
+})
+  .catch((err) => console.log(err.message));
 
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(cors);
-
-app.use(cookieParser());
 
 app.use(requestLogger);
 
+app.use(cookieParser());
+app.use('/', require('./routes/index'));
+
 app.use(errorLogger);
-
-app.use('/', urls);
-
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  res.status(err.statusCode || 500).send({ message: err.message });
-  next();
-});
+app.use('*', notFoundErrHandler);
+app.use(errHandler);
 
 
-app.listen(PORT, () => {});
+app.listen(PORT);
