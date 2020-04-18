@@ -1,6 +1,6 @@
 const allowedCors = [
-  'http://api.abramson.gq',
-  'http://www.api.abramson.gq',
+  'http://abramson.gq',
+  'https://abramson.gq',
   'http://localhost:8080',
   'http://localhost:8081',
 ];
