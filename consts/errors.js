@@ -1,0 +1,9 @@
+module.exports.ERR_NOT_FOUND = 'Ресурс не найден';
+module.exports.ERR_ARTICLE_NOT_FOUND = 'Новость не найдена';
+module.exports.ERR_USER_NOT_FOUND = 'Пользователь не найден';
+module.exports.ERR_DELETE_NOT_ALLOWED = 'Недостаточно прав для удаления';
+module.exports.ERR_NOT_SIGNED_IN = 'Необходима авторизация';
+module.exports.ERR_COMMON = 'Произошла ошибка';
+module.exports.ERR_SERVER = 'На сервере произошла ошибка';
+module.exports.ERR_INVALID_EMAIL = 'Не корректный email';
+module.exports.ERR_INVALID_URL = 'Не корректный url';

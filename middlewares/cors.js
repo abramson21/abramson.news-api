@@ -1,6 +1,6 @@
 const allowedCors = [
-  'http://abramson.gq',
-  'https://abramson.gq',
+  'https://abramson-news.ml/',
+  'http://abramson-news.ml/',
   'http://localhost:8080',
   'http://localhost:8081',
 ];
@@ -14,6 +14,7 @@ const corsChecker = (req, res, next) => {
       res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
       res.status(200);
     }
+
     next();
 };
 

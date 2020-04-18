@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
+const { validateURL, handleURLError } = require('../utils/model-validate-service');
 
-const validate = /^(https|http)?:\/\/(www.)?[^-_.\s](\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})?(:\d+)?(.+[#a-zA-Z/:0-9]{1,})?\.(.+[#a-zA-Z/:0-9]{1,})?$/i;
-
-const articleShema = new mongoose.Schema({
+const articleSchema = new mongoose.Schema({
   keyword: {
     type: String,
     required: true,
@@ -25,20 +24,26 @@ const articleShema = new mongoose.Schema({
   },
   link: {
     type: String,
-    match: validate,
     required: true,
+    validate: {
+      validator: validateURL,
+      message: handleURLError,
+    },
   },
   image: {
     type: String,
-    match: validate,
     required: true,
+    validate: {
+      validator: validateURL,
+      message: handleURLError,
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true,
+    select: false,
   },
 });
 
-
-module.exports = mongoose.model('article', articleShema);
+module.exports = mongoose.model('article', articleSchema);
