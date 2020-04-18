@@ -1,54 +1,44 @@
-// Переменные
 const Article = require('../models/article');
-const NotFoundError = require('../errors/not-found-error');
-const AccessError = require('../errors/access-error');
-const { notFoundIdMsg, accessErrMsg } = require('../scripts/errors-success-msg');
 
-// Получаем все новости пользователя
-module.exports.getAllArticles = (req, res, next) => {
-  const ownerId = req.user._id;
-  Article.find({ owner: ownerId })
+const NotFoundError = require('../errors/error_not_found');
+
+module.exports.getAllArticles = (req, res) => {
+  Article.find({})
     .then((article) => {
-      res.send(article);
+      if (article.length === 0) {
+        throw new NotFoundError('База данных карточек пуста!');
+      }
+      return res.send({ data: article });
     })
-    .catch(next);
+    .catch((error) => res.status(500).send({ message: error.message }));
 };
 
-// Создаем новость
-module.exports.createArticle = (req, res, next) => {
+module.exports.createArticle = (req, res) => {
+  const owner = req.user._id;
   const {
     keyword, title, text, date, source, link, image,
   } = req.body;
-  const ownerId = req.user._id;
   Article.create({
-    keyword, title, text, date, source, link, image, owner: ownerId,
+    keyword, title, text, date, source, link, image, owner,
   })
-    .then((article) => {
-      res.send(article);
-    })
-    .catch(next);
+    .then((article) => res.send({ data: article }))
+    .catch(() => res.status(500).send({ message: 'Не удается создать карточку' }));
 };
 
-// Удаляем новость
 module.exports.deleteArticle = (req, res, next) => {
-  const { articleId } = req.params;
-  const ownerId = req.user._id;
-  Article.findById(articleId).select('+owner')
+  Article.findById(req.params.articleId)
     .then((article) => {
-      if (!article) {
-        throw new NotFoundError(notFoundIdMsg);
+      if (article) {
+        if (article.owner.toString() === req.user._id) {
+          Article.findByIdAndRemove(req.params.articleId)
+            .then((removeArticle) => res.send({ remove: removeArticle }))
+            .catch(next);
+        } else {
+          next(new NotFoundError('Это не ваша карта'));
+        }
+      } else {
+        next(new NotFoundError('Карта не найдена'));
       }
-      if (article.owner.toString() !== ownerId) {
-        throw new AccessError(accessErrMsg);
-      }
-      Article.findByIdAndRemove(articleId)
-        .then((article) => {
-          if (!article) {
-            throw new NotFoundError(notFoundIdMsg);
-          }
-          res.send(article);
-        })
-        .catch(next);
     })
-    .catch(next);
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
