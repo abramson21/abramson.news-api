@@ -1,7 +1,8 @@
 const allowedCors = [
-  'https://ratilainen.ru',
-  'http://ratilainen.ru',
+  'https://abramson-news.ml',
+  'http://abramson-news.ml',
   'http://localhost:8080',
+  'http://localhost:8081',
 ];
 
 const corsChecker = (req, res, next) => {
